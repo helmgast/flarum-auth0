@@ -1,0 +1,38 @@
+{
+    "name": "helmgast/flarum-auth0",
+    "description": "Allow users to log in with Auth0.",
+    "type": "flarum-extension",
+    "keywords": ["authentication"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Martin Frojd",
+            "email": "martin@helmgast.se"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/helmgast/flarum-auth0/issues",
+        "source": "https://github.com/helmgast/flarum-auth0"
+    },
+    "require": {
+        "riskio/oauth2-auth0": "^2.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Helmgast\\Auth\\Auth0\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.1.x-dev"
+        },
+        "flarum-extension": {
+            "title": "Auth0 Login",
+            "icon": {
+                "name": "fab sign-in-alt",
+                "backgroundColor": "#eee",
+                "color": "#333"
+            }
+        }
+    }
+}
