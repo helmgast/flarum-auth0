@@ -8,12 +8,14 @@ use Flarum\Forum\Auth\Registration;
 use Flarum\Forum\Auth\ResponseFactory;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Riskio\OAuth2\Client\Provider\Auth0;
-#use League\OAuth2\Client\Provider\GithubResourceOwner;
 use League\OAuth2\Client\Token\AccessToken;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface;
 use Zend\Diactoros\Response\RedirectResponse;
+use Flarum\User\User;
+use Flarum\User\LoginProvider;
+use Intervention\Image\ImageManager;
 
 class Auth0AuthController implements RequestHandlerInterface
 {
@@ -45,16 +47,10 @@ class Auth0AuthController implements RequestHandlerInterface
     {
         $redirectUri = (string) $request->getAttribute('originalUri', $request->getUri())->withQuery('');
 
-/*         $provider = new Github([
-            'clientId' => $this->settings->get('flarum-auth-github.client_id'),
-            'clientSecret' => $this->settings->get('flarum-auth-github.client_secret'),
-            'redirectUri' => $redirectUri
-        ]); */
-
         $provider = new Auth0([
-            'account'      => $this->settings->get('flarum-auth-auth0.account'),
-            'clientId'     => $this->settings->get('flarum-auth-auth0.client_id'),
-            'clientSecret' => $this->settings->get('flarum-auth-auth0.client_secret'),
+            'account'      => $this->settings->get('helmgast-auth0.account'),
+            'clientId'     => $this->settings->get('helmgast-auth0.client_id'),
+            'clientSecret' => $this->settings->get('helmgast-auth0.client_secret'),
             'redirectUri'  => $redirectUri
         ]);
 
@@ -80,35 +76,26 @@ class Auth0AuthController implements RequestHandlerInterface
 
         $token = $provider->getAccessToken('authorization_code', compact('code'));
 
-        /** @var GithubResourceOwner $user */
         $user = $provider->getResourceOwner($token);
+        $user_array = $user->toArray();
+        $linked = array_get($user_array, 'app_metadata.linked');
+        $email = $user->getEmail();
+        if ($linked) {
+            // Fetches the first item on the linked auth list, and splits first part as the email
+            // This email is the preferred primary email, even if we actually logged in with a
+            // different email
+            $email = explode(":",array_get($user->toArray(),'app_metadata.linked')[0])[0];
+        }
 
         return $this->response->make(
-            'github', $user->getId(),
+            'auth0', $email,
             function (Registration $registration) use ($user, $provider, $token) {
                 $registration
-                    ->provideTrustedEmail($user->getEmail() ?: $this->getEmailFromApi($provider, $token))
-                    ->provideAvatar(array_get($user->toArray(), 'avatar_url'))
+                    ->provideTrustedEmail($email)
+                    ->provideAvatar(array_get($user_array, 'picture'))
                     ->suggestUsername($user->getNickname())
-                    ->setPayload($user->toArray());
+                    ->setPayload($user_array);
             }
         );
-    }
-
-    private function getEmailFromApi(Github $provider, AccessToken $token)
-    {
-        $url = $provider->apiDomain.'/user/emails';
-
-        $response = $provider->getResponse(
-            $provider->getAuthenticatedRequest('GET', $url, $token)
-        );
-
-        $emails = json_decode($response->getBody(), true);
-
-        foreach ($emails as $email) {
-            if ($email['primary'] && $email['verified']) {
-                return $email['email'];
-            }
-        }
     }
 }

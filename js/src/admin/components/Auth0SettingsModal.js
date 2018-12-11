@@ -1,3 +1,4 @@
+import app from 'flarum/app';
 import SettingsModal from 'flarum/components/SettingsModal';
 
 export default class Auth0SettingsModal extends SettingsModal {
@@ -6,24 +7,24 @@ export default class Auth0SettingsModal extends SettingsModal {
   }
 
   title() {
-    return app.translator.trans('flarum-auth-auth0.admin.auth0_settings.title');
+    return app.translator.trans('helmgast-auth0.admin.settings.title');
   }
 
   form() {
     return [
       <div className="Form-group">
-        <label>{app.translator.trans('flarum-auth-auth0.admin.auth0_settings.account_label')}</label>
-        <input className="FormControl" bidi={this.setting('flarum-auth-auth0.account')}/>
+        <label>{app.translator.trans('helmgast-auth0.admin.settings.account_label')}</label>
+        <input className="FormControl" bidi={this.setting('helmgast-auth0.account')}/>
       </div>,
 
       <div className="Form-group">
-        <label>{app.translator.trans('flarum-auth-auth0.admin.auth0_settings.client_id_label')}</label>
-        <input className="FormControl" bidi={this.setting('flarum-auth-auth0.client_id')}/>
+        <label>{app.translator.trans('helmgast-auth0.admin.settings.client_id_label')}</label>
+        <input className="FormControl" bidi={this.setting('helmgast-auth0.client_id')}/>
       </div>,
 
       <div className="Form-group">
-        <label>{app.translator.trans('flarum-auth-auth0.admin.auth0_settings.client_secret_label')}</label>
-        <input className="FormControl" bidi={this.setting('flarum-auth-auth0.client_secret')}/>
+        <label>{app.translator.trans('helmgast-auth0.admin.settings.client_secret_label')}</label>
+        <input className="FormControl" bidi={this.setting('helmgast-auth0.client_secret')}/>
       </div>
     ];
   }

@@ -29,7 +29,7 @@
         "flarum-extension": {
             "title": "Auth0 Login",
             "icon": {
-                "name": "fab sign-in-alt",
+                "name": "fab fa-github",
                 "backgroundColor": "#eee",
                 "color": "#333"
             }
