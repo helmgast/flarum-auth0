@@ -89,7 +89,7 @@ class Auth0AuthController implements RequestHandlerInterface
 
         return $this->response->make(
             'auth0', $email,
-            function (Registration $registration) use ($user, $provider, $token) {
+            function (Registration $registration) use ($email, $user_array, $user, $provider, $token) {
                 $registration
                     ->provideTrustedEmail($email)
                     ->provideAvatar(array_get($user_array, 'picture'))
