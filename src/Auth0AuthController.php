@@ -16,6 +16,8 @@ use Zend\Diactoros\Response\RedirectResponse;
 use Flarum\User\User;
 use Flarum\User\LoginProvider;
 use Intervention\Image\ImageManager;
+use Flarum\User\Event\Registered;
+
 
 class Auth0AuthController implements RequestHandlerInterface
 {
@@ -81,10 +83,9 @@ class Auth0AuthController implements RequestHandlerInterface
         $linked = array_get($user_array, 'app_metadata.linked');
         $email = $user->getEmail();
         if ($linked) {
-            // Fetches the first item on the linked auth list, and splits first part as the email
-            // This email is the preferred primary email, even if we actually logged in with a
-            // different email
-            $email = explode(":",array_get($user->toArray(),'app_metadata.linked')[0])[0];
+            // Linked is a list of emails and associated Auth0 ids.
+            // We assume the first is the primary and one to link to Flarum
+            $email = array_get($user_array,'app_metadata.linked')[0]['email'];
         }
 
         return $this->response->make(

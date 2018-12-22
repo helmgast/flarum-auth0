@@ -2,7 +2,9 @@
 
 
 use Helmgast\Auth\Auth0\Auth0AuthController;
+use Helmgast\Auth\Auth0\AddGroupListener;
 use Flarum\Extend;
+use Illuminate\Contracts\Events\Dispatcher;
 
 return [
     (new Extend\Frontend('forum'))
@@ -16,4 +18,8 @@ return [
 
     (new Extend\Routes('forum'))
         ->get('/auth/auth0', 'auth.auth0', Auth0AuthController::class),
+
+    // (new Extend\Compat(function (Dispatcher $events) {
+    //     $events->subscribe(AddGroupListener::class);
+    // })),
 ];
